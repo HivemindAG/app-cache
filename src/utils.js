@@ -1,0 +1,53 @@
+function optParse(body, def) {
+  if (typeof body !== 'string') return body;
+  try {
+    return JSON.parse(body);
+  } catch (e) {
+    return def;
+  }
+}
+
+function pathGetOrSet(obj, path, def) {
+  const lastInd = path.length - 1;
+  path.forEach((key, ind) => {
+    if (!obj.hasOwnProperty(key)) {
+      obj[key] = ind == lastInd ? def : {};
+    }
+    obj = obj[key];
+  });
+  return obj;
+}
+
+function pathDelete(obj, path) {
+  path = path.slice(0);
+  const lastKey = path.pop();
+  path.forEach((key) => {
+    obj = obj[key] || {};
+  });
+  delete obj[lastKey];
+}
+
+function makeSample(obj) {
+  return {
+    id: obj.id,
+    // topic: obj.topic,
+    timestamp: new Date(obj.timestamp),
+    data: obj.data,
+  };
+}
+
+function sampleCompare(s1, s2) {
+  if (s1.timestamp < s2.timestamp) return -1;
+  if (s1.timestamp > s2.timestamp) return 1;
+  if (s1.id < s2.id) return -1;
+  if (s1.id > s2.id) return 1;
+  return 0;
+}
+
+module.exports = {
+  optParse,
+  pathGetOrSet,
+  pathDelete,
+  makeSample,
+  sampleCompare,
+};

@@ -1,0 +1,15 @@
+{
+  "name": "hivemind-app-cache",
+  "version": "1.0.0",
+  "description": "Caching layer for app backends based on the Hivemind IoT Platform",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Stephan J. Müller <stephan@heap.ch>",
+  "license": "MIT",
+  "dependencies": {
+    "request": "^2.88.0",
+    "ws": "^6.1.4"
+  }
+}
