@@ -74,8 +74,8 @@ function handleChange(change) {
 }
 
 function handleClose(envId) {
-  sampleService.removeSampleCache(envId, null, null);
   delete socketCache[envId];
+  sampleService.removeSampleCache(envId, null, null);
 }
 
 function disconnect(envId) {

@@ -85,7 +85,7 @@ Calls `cbk` for each sample, as long as the return value is `true` or there are 
 
 ### `platform.events.on('sampleInsert', cbk)`
 
-Emitted when a new sample is added to the cache.
+Emitted when a new sample is added to a sample cache.
 
 * `cbk(event)` {Function}
   * `event` {Object}
@@ -99,10 +99,11 @@ Emitted when a new sample is added to the cache.
 
 ### `platform.events.on('sampleInvalidate', cbk)`
 
-Emitted when the sample cache is flushed. This can happen when samples are deleted, or a communication error occurs.
+Emitted when sample caches are destroyed. This can happen when samples are deleted, or a communication error occurs.
 
-If `topic` is `null`, the sample cache for the whole device is invalidated (all topics). If both `devId` and `topic` are `null`, the sample cache for the environment is invalidated.
+If `topic` is `null`, the sample caches of all topics are invalidated. If both `devId` and `topic` are `null`, the sample caches of all devices in the environment are invalidated.
 
+After a `sampleInvalidate` event, no more `sampleInsert` events will be emitted for the affected caches (since they no longer exist). Access samples over a cursor to create a new cache.
 
 * `cbk(event)` {Function}
   * `event` {Object}

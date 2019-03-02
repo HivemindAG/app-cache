@@ -18,6 +18,14 @@ function pathGetOrSet(obj, path, def) {
   return obj;
 }
 
+function pathExists(obj, path) {
+  for (const key of path) {
+    obj = obj[key];
+    if (obj === undefined) return false;
+  }
+  return true;
+}
+
 function pathDelete(obj, path) {
   path = path.slice(0);
   const lastKey = path.pop();
@@ -47,6 +55,7 @@ function sampleCompare(s1, s2) {
 module.exports = {
   optParse,
   pathGetOrSet,
+  pathExists,
   pathDelete,
   makeSample,
   sampleCompare,

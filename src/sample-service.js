@@ -16,13 +16,15 @@ function getSampleCache(envId, devId, topic) {
   });
 }
 
-function removeSampleCache(envId, devId, topic) {
-  const path = [envId, devId, topic].map(o => o || null);
-  const event = {envId: path[0], devId: path[1], topic: path[2]};
-  let key = path.pop();
-  while (key === null) key = path.pop();
-  const obj = utils.pathGetOrSet(sampleCache, path, {});
-  delete obj[key];
+function hasSampleCache(envId, devId, topic) {
+  return utils.pathExists(sampleCache, [envId, devId, topic]);
+}
+
+function removeSampleCache(envId, devId = null, topic = null) {
+  const path = [envId, devId, topic].filter(k => k !== null);
+  if (!utils.pathExists(sampleCache, path)) return;
+  utils.pathDelete(sampleCache, path);
+  const event = {envId, devId, topic};
   events.emit('sampleInvalidate', event);
 }
 
@@ -85,6 +87,8 @@ function _loadMore(entry, session, devId, topic, limit, cbk) {
 }
 
 function addSample(envId, devId, topic, sample) {
+  // Ignore samples from subscriptions after 'invalidate'; use cursor first
+  if (!hasSampleCache(envId, devId, topic)) return;
   const entry = getSampleCache(envId, devId, topic);
   let i = 0;
   for (; i < entry.samples.length - 1; i += 1) {
@@ -143,5 +147,6 @@ class SampleCursor {
 Object.assign(exports, {
   SampleCursor,
   addSample,
+  hasSampleCache,
   removeSampleCache,
 });

@@ -10,6 +10,7 @@ const events = require('./src/events');
 
 const entities = entityService;
 const SampleCursor = sampleService.SampleCursor;
+const hasSampleCache = sampleService.hasSampleCache;
 
 function flushEnv(envId) {
   entities.cache.prune
@@ -26,6 +27,7 @@ module.exports = {
   apiRequest,
   entities,
   SampleCursor,
+  hasSampleCache,
   flushEnv,
   events,
   // Helpers
