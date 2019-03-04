@@ -28,6 +28,20 @@ function removeSampleCache(envId, devId = null, topic = null) {
   events.emit('sampleInvalidate', event);
 }
 
+function countSamples(envId, devId = null, topic = null) {
+  const path = [envId, devId, topic].filter(k => k !== null);
+  if (!utils.pathExists(sampleCache, path)) return 0;
+  const obj = utils.pathGetOrSet(sampleCache, path, {});
+  return _countSamples(obj);
+}
+
+function _countSamples(obj) {
+  if (obj.samples) return obj.samples.length;
+  let n = 0;
+  for (const id in obj) n += _countSamples(obj[id]);
+  return n;
+}
+
 function loadMore(session, devId, topic, limit, cbk) {
   const entry = getSampleCache(session.envId, devId, topic);
   if (entry.hasOwnProperty('errorTime')) {
@@ -149,4 +163,5 @@ Object.assign(exports, {
   addSample,
   hasSampleCache,
   removeSampleCache,
+  countSamples,
 });
