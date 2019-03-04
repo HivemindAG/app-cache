@@ -12,14 +12,19 @@ const entities = entityService;
 const SampleCursor = sampleService.SampleCursor;
 const hasSampleCache = sampleService.hasSampleCache;
 
-function flushEnv(envId) {
-  entities.cache.prune
+function flushEnv(envId, cbk) {
+  const acc = {entities: 0, samples: 0};
   const pathPrefix = `/v1/environments/${envId}`;
   entities.cache.prune((key) => {
-    return key.startsWith(pathPrefix);
+    if (key.startsWith(pathPrefix)) {
+      acc.entities += 1;
+      return true;
+    }
   });
+  acc.samples = sampleService.countSamples(envId);
   socketService.disconnect(envId);
-  samples.removeSampleCache(envId, null, null);
+  sampleService.removeSampleCache(envId, null, null);
+  if (cbk) cbk(null, acc);
 }
 
 module.exports = {
