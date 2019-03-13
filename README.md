@@ -2,6 +2,8 @@
 
 This module caches requests to the Hivemind IoT Platform for faster response time and fewer API calls.
 
+For an example of how to use this module, check out [Hivemind App Backend](https://github.com/HivemindAG/app-backend).
+
 ## Entities
 
 The `entities` submodule caches `GET` requests to the API for `config.entityCacheTimeout` milliseconds (defaults to 4 minutes).
