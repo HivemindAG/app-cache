@@ -24,7 +24,7 @@ function removeSampleCache(envId, devId = null, topic = null) {
   const path = [envId, devId, topic].filter(k => k !== null);
   if (!utils.pathExists(sampleCache, path)) return;
   utils.pathDelete(sampleCache, path);
-  const event = {envId, devId, topic};
+  const event = { envId, devId, topic };
   events.emit('sampleInvalidate', event);
 }
 
@@ -118,7 +118,7 @@ function addSample(envId, devId, topic, sample) {
     entry.samples.pop();
   }
   // Inform about new sample
-  const event = {envId: envId, devId: devId, topic: topic, sample: sample};
+  const event = { envId: envId, devId: devId, topic: topic, sample: sample };
   events.emit('sampleInsert', event);
 }
 
@@ -128,11 +128,11 @@ class SampleCursor {
     this.chunkMin = 200;
     this.chunkMax = 2000;
     this.limit = config.sampleLimit;
-    Object.assign(this, {session, devId, topic});
+    Object.assign(this, { session, devId, topic });
   }
   forEach(cbk, done) {
     const entry = getSampleCache(this.session.envId, this.devId, this.topic);
-    const values = entry.samples.values();
+    const values = (entry.samples && entry.samples.length) ? entry.samples.values() : [];
     // Fast forward after 'loadMore'
     if (this.lastId) {
       for (const sample of values) {
@@ -142,7 +142,7 @@ class SampleCursor {
     let wantsMore = true;
     for (const sample of values) {
       this.lastId = sample.id;
-      wantsMore =  cbk(sample);
+      wantsMore = cbk(sample);
       if (!wantsMore) break;
     }
     const limit = Math.min(entry.maxRequested * 2 || this.chunkMin, this.chunkMax, this.limit - entry.samples.length);
@@ -152,7 +152,7 @@ class SampleCursor {
         this.forEach(cbk, done);
       });
       return;
-    } 
+    }
     done(null);
   }
 }
