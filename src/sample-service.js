@@ -132,15 +132,14 @@ class SampleCursor {
   }
   forEach(cbk, done) {
     const entry = getSampleCache(this.session.envId, this.devId, this.topic);
-    const values = (entry.samples && entry.samples.length) ? entry.samples.values() : [];
     // Fast forward after 'loadMore'
     if (this.lastId) {
-      for (const sample of values) {
+      for (const sample of entry.samples) {
         if (sample.id === this.lastId) break;
       }
     }
     let wantsMore = true;
-    for (const sample of values) {
+    for (const sample of entry.samples) {
       this.lastId = sample.id;
       wantsMore = cbk(sample);
       if (!wantsMore) break;
