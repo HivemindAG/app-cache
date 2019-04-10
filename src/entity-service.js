@@ -9,7 +9,7 @@ function get(session, path, cbk, keySalt) {
   cache.get(key, cbk, (info, cbk) => {
     const req = {
       url: `${config.apiURL}${path}`,
-      qs: {limit: 1000},
+      qs: { limit: 1000 },
     };
     apiRequest.call(session, req, (err, res, ans) => {
       if (config.debug) console.info(`CACHE: update ${path}`);
@@ -18,7 +18,7 @@ function get(session, path, cbk, keySalt) {
         ans.data.forEach((obj) => byId[obj.id] = obj);
         ans.byId = byId;
       }
-      const opt = {timeout: config.entityCacheTimeout, errorTimeout: config.errorTimeout};
+      const opt = { timeout: config.entityCacheTimeout, errorTimeout: config.errorTimeout };
       cbk(err, ans, opt);
     });
   });
@@ -46,7 +46,11 @@ function getList(session, path, cbk) {
 function getSingle(session, path, id, cbk) {
   get(session, `/v1/environments/${session.envId}${path}`, (err, ans) => {
     if (err) return cbk(err);
-    if (!ans.byId.hasOwnProperty(id)) return cbk(401);
+    if (!ans.byId.hasOwnProperty(id)) {
+      const error = new Error(`Invalid entity: '${id}'`);
+      error.status = 404;
+      return cbk(error);
+    }
     cbk(null, ans.byId[id]);
   });
 }
