@@ -1,6 +1,6 @@
 {
   "name": "hivemind-app-cache",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Caching layer for app backends based on the Hivemind IoT Platform",
   "keywords": [
     "Hivemind",
@@ -11,7 +11,8 @@
   "author": "Hivemind AG <info@hivemind.ch> (https://www.hivemind.ch)",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "version-patch": "npm version patch -m \"Publish version %s\""
   },
   "dependencies": {
     "request": "^2.88.0",
