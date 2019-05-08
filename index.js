@@ -1,4 +1,8 @@
 const config = require('./src/config');
+
+// overriding platform api url with environment variable
+config.apiURL = process.env.PLATFORM_API_URL || config.apiURL;
+
 const apiRequest = require('./src/api-request');
 const asyncCache = require('./src/async-cache');
 const utils = require('./src/utils');
@@ -13,7 +17,7 @@ const SampleCursor = sampleService.SampleCursor;
 const hasSampleCache = sampleService.hasSampleCache;
 
 function flushEnv(envId, cbk) {
-  const acc = {entities: 0, samples: 0};
+  const acc = { entities: 0, samples: 0 };
   const pathPrefix = `/v1/environments/${envId}`;
   entities.cache.prune((key) => {
     if (key.startsWith(pathPrefix)) {
