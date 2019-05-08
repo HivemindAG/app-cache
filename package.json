@@ -1,6 +1,6 @@
 {
   "name": "hivemind-app-cache",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Caching layer for app backends based on the Hivemind IoT Platform",
   "keywords": [
     "Hivemind",
