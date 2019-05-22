@@ -8,20 +8,21 @@ const Cache = require('./async-cache').Cache;
 const sampleService = require('./sample-service');
 
 function addSub(session, devId, topic) {
-  const cmd = {cmd: 'sub', arg: {deviceId: devId, topic: topic}};
+  const cmd = { cmd: 'sub', arg: { deviceId: devId, topic: topic } };
   socketSend(session, devId, cmd);
 }
 
 const socketCache = {};
 
-function socketSend(session, devId, cmd) {
+function socketSend(session, devId, cmd, connOpenMsg) {
   const envId = session.envId;
   if (!socketCache.hasOwnProperty(envId)) {
-    const entry = {waiting: [cmd]};
+    const entry = { waiting: [cmd] };
     socketCache[envId] = entry;
     const url = `${config.apiURL}/v1/environments/${envId}/data-stream`;
-    const ws = new WebSocket(url, {headers: {'API-Key': session.apiKey}});
+    const ws = new WebSocket(url, { headers: { 'API-Key': session.apiKey } });
     ws.on('open', () => {
+      if (config.debug || connOpenMsg) console.info(`WS: connection opened (${envId})`);
       entry.ws = ws;
       const waiting = entry.waiting;
       delete entry.waiting;
@@ -42,15 +43,16 @@ function socketSend(session, devId, cmd) {
     });
     // TODO: Test if this is called in all possible situations
     ws.on('close', (err) => {
-      if (err.code !== 1000) {
-        // Not a normal close (CLOSE_NORMAL)
-        console.error(`WS: connection closed (${envId}): ${err}`);
-      }
       handleClose(envId);
+      if (err.code !== 1000) { // Not a normal close (CLOSE_NORMAL)
+        console.error(`WS: connection closed (${envId}): ${err}. Reconnecting...`);
+        socketSend(session, devId, cmd, true);
+      }
     });
     ws.on('error', (err) => {
-      console.error(`WS: connection error (${envId}): ${err}`);
       handleClose(envId);
+      console.error(`WS: connection error (${envId}): ${err}. Reconnecting...`);
+      socketSend(session, devId, cmd, true);
     });
     return;
   }
