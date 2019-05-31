@@ -14,7 +14,7 @@ function addSub(session, devId, topic) {
 
 const socketCache = {};
 
-function socketSend(session, devId, cmd, connOpenMsg) {
+function socketSend(session, devId, cmd) {
   const envId = session.envId;
   if (!socketCache.hasOwnProperty(envId)) {
     const entry = { waiting: [cmd] };
@@ -22,7 +22,7 @@ function socketSend(session, devId, cmd, connOpenMsg) {
     const url = `${config.apiURL}/v1/environments/${envId}/data-stream`;
     const ws = new WebSocket(url, { headers: { 'API-Key': session.apiKey } });
     ws.on('open', () => {
-      if (config.debug || connOpenMsg) console.info(`WS: connection opened (${envId})`);
+      if (config.debug) console.info(`WS: connection opened (${envId})`);
       entry.ws = ws;
       const waiting = entry.waiting;
       delete entry.waiting;
@@ -44,15 +44,15 @@ function socketSend(session, devId, cmd, connOpenMsg) {
     // TODO: Test if this is called in all possible situations
     ws.on('close', (err) => {
       handleClose(envId);
-      if (err.code !== 1000) { // Not a normal close (CLOSE_NORMAL)
+      if (err.code !== 1000 && err !== 1000) { // Not a normal close (CLOSE_NORMAL)
         console.error(`WS: connection closed (${envId}): ${err}. Reconnecting...`);
-        socketSend(session, devId, cmd, true);
+        socketSend(session, devId, cmd);
       }
     });
     ws.on('error', (err) => {
       handleClose(envId);
       console.error(`WS: connection error (${envId}): ${err}. Reconnecting...`);
-      socketSend(session, devId, cmd, true);
+      socketSend(session, devId, cmd);
     });
     return;
   }

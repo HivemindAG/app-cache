@@ -15,6 +15,7 @@ const events = require('./src/events');
 const entities = entityService;
 const SampleCursor = sampleService.SampleCursor;
 const hasSampleCache = sampleService.hasSampleCache;
+const checkForNewSamples = sampleService.checkForNewSamples;
 
 function flushEnv(envId, cbk) {
   const acc = { entities: 0, samples: 0 };
@@ -37,6 +38,7 @@ module.exports = {
   entities,
   SampleCursor,
   hasSampleCache,
+  checkForNewSamples,
   flushEnv,
   events,
   // Helpers

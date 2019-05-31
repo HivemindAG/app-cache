@@ -122,6 +122,32 @@ function addSample(envId, devId, topic, sample) {
   events.emit('sampleInsert', event);
 }
 
+function checkForNewSamples(session, devId, topic, cbk) {
+  if (!hasSampleCache(session.envId, devId, topic))
+    return cbk(false);
+  const entry = getSampleCache(session.envId, devId, topic);
+  if (!entry || !entry.samples || !entry.samples.length)
+    return cbk(new Error(`Invalid cache for ${session.envId}:${devId}:${topic}`));
+  const query = {
+    limit: 10,
+    keys: ['id', 'topic', 'timestamp', 'data'],
+    topic: topic,
+    after: entry.samples[0].id,
+  };
+  const req = {
+    method: 'POST',
+    url: `${config.apiURL}/v1/environments/${session.envId}/devices/${devId}/data/query`,
+    json: query,
+  };
+  apiRequest.call(session, req, (err, res, ans) => {
+    if (err) return cbk(err);
+    if (!ans || !ans.data || !ans.data.length)
+      return cbk(null, false); // doesn't have samples at all
+    // return if last sample exists in cache
+    cbk(null, entry.samples.some(s1 => utils.sampleCompare(s1, ans.data[0]) !== 0));
+  });
+}
+
 class SampleCursor {
   constructor(session, devId, topic) {
     this.lastId = null;
@@ -132,12 +158,6 @@ class SampleCursor {
   }
   forEach(cbk, done) {
     const entry = getSampleCache(this.session.envId, this.devId, this.topic);
-    // Fast forward after 'loadMore'
-    if (this.lastId) {
-      for (const sample of entry.samples) {
-        if (sample.id === this.lastId) break;
-      }
-    }
     let wantsMore = true;
     for (const sample of entry.samples) {
       this.lastId = sample.id;
@@ -163,4 +183,5 @@ Object.assign(exports, {
   hasSampleCache,
   removeSampleCache,
   countSamples,
+  checkForNewSamples,
 });
