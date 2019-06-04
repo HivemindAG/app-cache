@@ -122,29 +122,26 @@ function addSample(envId, devId, topic, sample) {
   events.emit('sampleInsert', event);
 }
 
-function checkForNewSamples(session, devId, topic, cbk) {
+function checkForNewerSamples(session, devId, topic, cbk) {
   if (!hasSampleCache(session.envId, devId, topic))
-    return cbk(false);
+    return cbk(null, [], []);
   const entry = getSampleCache(session.envId, devId, topic);
-  if (!entry || !entry.samples || !entry.samples.length)
-    return cbk(new Error(`Invalid cache for ${session.envId}:${devId}:${topic}`));
   const query = {
     limit: 10,
     keys: ['id', 'topic', 'timestamp', 'data'],
     topic: topic,
-    after: entry.samples[0].id,
   };
+  if (entry && entry.samples && entry.samples.length)
+    query.after = entry.samples[0].id;
   const req = {
     method: 'POST',
     url: `${config.apiURL}/v1/environments/${session.envId}/devices/${devId}/data/query`,
     json: query,
   };
   apiRequest.call(session, req, (err, res, ans) => {
-    if (err) return cbk(err);
-    if (!ans || !ans.data || !ans.data.length)
-      return cbk(null, false); // doesn't have samples at all
-    // return if last sample exists in cache
-    cbk(null, entry.samples.some(s1 => utils.sampleCompare(s1, ans.data[0]) !== 0));
+    if (err)
+      return cbk(err);
+    cbk(null, entry.samples, ans.data);
   });
 }
 
@@ -183,5 +180,5 @@ Object.assign(exports, {
   hasSampleCache,
   removeSampleCache,
   countSamples,
-  checkForNewSamples,
+  checkForNewerSamples,
 });
