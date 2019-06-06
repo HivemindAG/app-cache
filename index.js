@@ -35,6 +35,7 @@ module.exports = {
   config,
   apiRequest,
   entities,
+  sampleService,
   SampleCursor,
   hasSampleCache,
   flushEnv,
