@@ -31,7 +31,7 @@ debug.log
 testem.log
 /typings
 
-/package-lock.json
+#/package-lock.json
 
 # system files
 .DS_Store
