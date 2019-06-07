@@ -42,10 +42,10 @@ function socketSend(session, devId, cmd) {
       handleChange(change);
     });
     // TODO: Test if this is called in all possible situations
-    ws.on('close', (err) => {
+    ws.on('close', (closeCode, closeMessage) => {
       handleClose(envId);
-      if (err.code !== 1000 && err !== 1000) { // Not a normal close (CLOSE_NORMAL)
-        console.error(`WS: connection closed (${envId}): ${err}. Reconnecting...`);
+      if (closeCode !== 1000) { // Not a normal close (CLOSE_NORMAL)
+        console.error(`WS: connection closed (envId: ${envId}, code: ${closeCode}, message: ${closeMessage}). Reconnecting...`);
         socketSend(session, devId, cmd);
       }
     });
