@@ -149,8 +149,8 @@ class SampleCursor {
   constructor(session, devId, topic) {
     this.lastId = null;
     this.chunkMin = 200;
-    this.chunkMax = 2000;
-    this.limit = config.sampleLimit;
+    this.chunkMax = 4000;
+    this.sampleLimit = config.sampleLimit;
     Object.assign(this, { session, devId, topic });
   }
   forEach(cbk, done) {
@@ -161,9 +161,9 @@ class SampleCursor {
       wantsMore = cbk(sample);
       if (!wantsMore) break;
     }
-    const limit = Math.min(entry.maxRequested * 2 || this.chunkMin, this.chunkMax, this.limit - entry.samples.length);
-    if (wantsMore && entry.hasMore && limit > 0) {
-      loadMore(this.session, this.devId, this.topic, limit, (err) => {
+    const currentRequestLimit = Math.min(entry.maxRequested * 2 || this.chunkMin, this.chunkMax, this.sampleLimit - entry.samples.length);
+    if (wantsMore && entry.hasMore && currentRequestLimit > 0) {
+      loadMore(this.session, this.devId, this.topic, currentRequestLimit, (err) => {
         if (err) return done(err);
         this.forEach(cbk, done);
       });

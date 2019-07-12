@@ -1,7 +1,12 @@
 const config = require('./src/config');
 
 // overriding platform api url with environment variable
+config.debug = process.env.DEBUG && process.env.DEBUG.toLowerCase() === 'true' || config.debug;
 config.apiURL = process.env.PLATFORM_API_URL || config.apiURL;
+config.concurrentRequests = +process.env.APP_CACHE_CONCURRENT_REQUESTS || config.concurrentRequests;
+config.sampleLimit = +process.env.APP_CACHE_SAMPLE_LIMIT || config.sampleLimit;
+config.errorTimeout = +process.env.APP_CACHE_ERROR_TIMEOUT || config.errorTimeout;
+config.entityCacheTimeout = +process.env.APP_CACHE_ENTITY_CACHE_TIMEOUT || config.entityCacheTimeout;
 
 const apiRequest = require('./src/api-request');
 const asyncCache = require('./src/async-cache');
