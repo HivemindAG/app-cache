@@ -45,13 +45,13 @@ function socketSend(session, devId, cmd) {
     ws.on('close', (closeCode, closeMessage) => {
       handleClose(envId);
       if (closeCode !== 1000) { // Not a normal close (CLOSE_NORMAL)
-        console.error(`WS: connection closed (envId: ${envId}, code: ${closeCode}, message: ${closeMessage}). Reconnecting...`);
+        console.error(`WS: connection closed for env: ${envId}(${session.appEnv.id}), code: ${closeCode}${(closeMessage) ? ', message: ' + closeMessage : ''}. Will be reconnected.`);
         socketSend(session, devId, cmd);
       }
     });
     ws.on('error', (err) => {
       handleClose(envId);
-      console.error(`WS: connection error (${envId}): ${err}. Reconnecting...`);
+      console.error(`WS: connection error for env: ${envId}(${session.appEnv.id})): ${err}. Will be reconnected.`);
       socketSend(session, devId, cmd);
     });
     return;
