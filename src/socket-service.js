@@ -22,17 +22,17 @@ function socketSend(session, devId, cmd) {
     const url = `${config.apiURL}/v1/environments/${envId}/data-stream`;
     const ws = new WebSocket(url, { headers: { 'API-Key': session.apiKey } });
     ws.on('open', () => {
-      if (config.debug) console.info(`WS: connection opened (${envId})`);
+      config.appCacheDebug && console.info(`CACHE: WebSocket connection opened for env: ${envId}(${session.appEnv.id}).`);
       entry.ws = ws;
       const waiting = entry.waiting;
       delete entry.waiting;
       waiting.forEach((cmd) => ws.send(JSON.stringify(cmd)));
     });
     ws.on('message', (data) => {
-      if (config.debug) console.info(`> (${envId}) ${data}`);
+      config.appCacheDebug && console.info(`CACHE: Adding new sample from WebSocket for env: ${envId}(${session.appEnv.id}), data: ${data}.`);
       const msg = utils.optParse(data);
       if (!msg) {
-        console.error(`WS: invalid JSON: ${data}`);
+        console.error(`CACHE ERROR: Invalid JSON in WebSocket message: ${data}`);
         ws.close();
         return;
       }
@@ -45,13 +45,13 @@ function socketSend(session, devId, cmd) {
     ws.on('close', (closeCode, closeMessage) => {
       handleClose(envId);
       if (closeCode !== 1000) { // Not a normal close (CLOSE_NORMAL)
-        console.error(`WS: connection closed for env: ${envId}(${session.appEnv.id}), code: ${closeCode}${(closeMessage) ? ', message: ' + closeMessage : ''}. Will be reconnected.`);
+        config.appCacheDebug && console.info(`CACHE: WebSocket connection closed for env: ${envId}(${session.appEnv.id}) with code: ${closeCode}. Trying to reconnect.`);
         socketSend(session, devId, cmd);
       }
     });
     ws.on('error', (err) => {
       handleClose(envId);
-      console.error(`WS: connection error for env: ${envId}(${session.appEnv.id})): ${err}. Will be reconnected.`);
+      console.error(`CACHE ERROR: WebSocket connection error for env: ${envId}(${session.appEnv.id})): ${err}. Trying to reconnect.`);
       socketSend(session, devId, cmd);
     });
     return;

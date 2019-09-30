@@ -45,11 +45,19 @@ function makeSample(obj) {
 }
 
 function sampleCompare(s1, s2) {
-  if (s1.timestamp < s2.timestamp) return -1;
-  if (s1.timestamp > s2.timestamp) return 1;
+  if (ensureItsDate(s1.timestamp) < ensureItsDate(s2.timestamp)) return -1;
+  if (ensureItsDate(s1.timestamp) > ensureItsDate(s2.timestamp)) return 1;
   if (s1.id < s2.id) return -1;
   if (s1.id > s2.id) return 1;
   return 0;
+}
+
+// For avoiding bug with string timestamps. Remove when fixed.
+function ensureItsDate(timestamp) {
+  if (!(timestamp instanceof Date)) {
+    timestamp = new Date(timestamp);
+  }
+  return timestamp;
 }
 
 module.exports = {

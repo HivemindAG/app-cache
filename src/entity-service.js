@@ -12,7 +12,7 @@ function get(session, path, cbk, keySalt) {
       qs: { limit: 1000 },
     };
     apiRequest.call(session, req, (err, res, ans) => {
-      if (config.debug) console.info(`CACHE: update ${path}`);
+      config.appCacheDebug && console.info(`CACHE: updating: ${path}`);
       if (!err && ans.hasOwnProperty('total') && Array.isArray(ans.data)) {
         const byId = {};
         ans.data.forEach((obj) => byId[obj.id] = obj);

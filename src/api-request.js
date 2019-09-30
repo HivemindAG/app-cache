@@ -40,7 +40,7 @@ function dispatch() {
     nInFlight -= 1;
     dispatch();
     const cbk = args.cbk;
-    if (err) console.error('REQERR: ' + JSON.stringify({ req: args.options, err }));
+    if (err) console.error(`CACHE ERROR: Platform api request has failed: ${JSON.stringify({ req: args.options, err })}`);
     if (err) return cbk(err, res);
     const ans = utils.optParse(body, undefined);
     if (res.statusCode < 200 || res.statusCode >= 300) {

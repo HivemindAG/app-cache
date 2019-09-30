@@ -1,7 +1,7 @@
 const config = require('./src/config');
 
 // overriding platform api url with environment variable
-config.debug = process.env.DEBUG && process.env.DEBUG.toLowerCase() === 'true' || config.debug;
+config.appCacheDebug = process.env.APP_CACHE_DEBUG && process.env.APP_CACHE_DEBUG.toLowerCase() === 'true' || config.appCacheDebug;
 config.apiURL = process.env.PLATFORM_API_URL || config.apiURL;
 config.concurrentRequests = +process.env.APP_CACHE_CONCURRENT_REQUESTS || config.concurrentRequests;
 config.sampleLimit = +process.env.APP_CACHE_SAMPLE_LIMIT || config.sampleLimit;

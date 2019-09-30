@@ -88,7 +88,7 @@ function _loadMore(entry, session, devId, topic, limit, cbk) {
   }
   entry.maxRequested += limit;
   apiRequest.call(session, req, (err, res, ans) => {
-    if (config.debug) console.info(`CACHE: load samples ${session.envId}:${devId}:${topic} (has ${samples.length}; add ${limit})`);
+    config.appCacheDebug && console.info(`CACHE: loading samples for ${session.envId}:${devId}:${topic} (has ${samples.length}, adding ${limit}).`);
     if (err) return cbk(err);
     entry.hasMore = ans.data.length === limit;
     samples.push.apply(samples, ans.data.map(utils.makeSample));
@@ -127,7 +127,7 @@ function checkForNewerSamples(session, devId, topic, cbk) {
     return cbk(null, [], []);
   const entry = getSampleCache(session.envId, devId, topic);
   const query = {
-    limit: 10,
+    limit: +process.env.APP_CACHE_CHECK_LIMIT || 5,
     keys: ['id', 'topic', 'timestamp', 'data'],
     topic: topic,
   };

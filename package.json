@@ -1,14 +1,15 @@
 {
   "name": "hivemind-app-cache",
-  "version": "1.0.6",
-  "description": "Caching layer for app backends based on the Hivemind IoT Platform",
+  "version": "1.0.7",
+  "description": "Caching layer for app backends based on the Akenza IoT Platform",
   "keywords": [
+    "Akenza",
     "Hivemind",
     "IoT"
   ],
   "license": "MIT",
   "repository": "github:HivemindAG/app-cache",
-  "author": "Hivemind AG <info@hivemind.ch> (https://www.hivemind.ch)",
+  "author": "Akenza AG <info@akenza.com> (https://www.akenza.com)",
   "main": "index.js",
   "scripts": {
     "version-patch": "npm version patch -m \"Publish version %s\""
