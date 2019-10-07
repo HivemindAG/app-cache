@@ -1,6 +1,6 @@
 {
   "name": "hivemind-app-cache",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Caching layer for app backends based on the Akenza IoT Platform",
   "keywords": [
     "Akenza",
@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "request": "^2.88.0",
-    "ws": "^6.2.1"
+    "ws": "^7.1.2"
   },
   "engines": {
     "node": ">=10.0.0"

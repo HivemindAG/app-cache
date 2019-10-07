@@ -19,17 +19,17 @@ function socketSend(session, devId, cmd) {
   if (!socketCache.hasOwnProperty(envId)) {
     const entry = { waiting: [cmd] };
     socketCache[envId] = entry;
-    const url = `${config.apiURL}/v1/environments/${envId}/data-stream`;
-    const ws = new WebSocket(url, { headers: { 'API-Key': session.apiKey } });
+    const url = `${config.apiURL}/v1/environments/${envId}/data-stream?apiKey=${session.apiKey}`;
+    const ws = new WebSocket(url);
     ws.on('open', () => {
-      config.appCacheDebug && console.info(`CACHE: WebSocket connection opened for env: ${envId}(${session.appEnv.id}).`);
+      config.appCacheDebug && console.info(`CACHE: WebSocket connection opened for env ${envId} (${session.appEnv.id}).`);
       entry.ws = ws;
       const waiting = entry.waiting;
       delete entry.waiting;
       waiting.forEach((cmd) => ws.send(JSON.stringify(cmd)));
     });
     ws.on('message', (data) => {
-      config.appCacheDebug && console.info(`CACHE: Adding new sample from WebSocket for env: ${envId}(${session.appEnv.id}), data: ${data}.`);
+      config.appCacheDebug && console.info(`CACHE: Adding new sample from WebSocket for env ${envId} (${session.appEnv.id}), data: ${data}.`);
       const msg = utils.optParse(data);
       if (!msg) {
         console.error(`CACHE ERROR: Invalid JSON in WebSocket message: ${data}`);
@@ -45,13 +45,13 @@ function socketSend(session, devId, cmd) {
     ws.on('close', (closeCode, closeMessage) => {
       handleClose(envId);
       if (closeCode !== 1000) { // Not a normal close (CLOSE_NORMAL)
-        config.appCacheDebug && console.info(`CACHE: WebSocket connection closed for env: ${envId}(${session.appEnv.id}) with code: ${closeCode}. Trying to reconnect.`);
+        config.appCacheDebug && console.info(`CACHE: WebSocket connection closed for env ${envId} (${session.appEnv.id}) with code: ${closeCode}. Trying to reconnect.`);
         socketSend(session, devId, cmd);
       }
     });
     ws.on('error', (err) => {
       handleClose(envId);
-      console.error(`CACHE ERROR: WebSocket connection error for env: ${envId}(${session.appEnv.id})): ${err}. Trying to reconnect.`);
+      console.error(`CACHE ERROR: WebSocket connection error for env ${envId} (${session.appEnv.id}): ${err}. Trying to reconnect.`);
       socketSend(session, devId, cmd);
     });
     return;
